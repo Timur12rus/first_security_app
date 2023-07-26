@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-// т.к. сервис для security, имплементируем интерфейс UserDetailsService
+// т.к. сервис для security, реализуем интерфейс UserDetailsService
 @Service
 public class PersonDetailsService implements UserDetailsService {
 
@@ -25,7 +25,7 @@ public class PersonDetailsService implements UserDetailsService {
     // загружает пользователя по имени пользователя
     @Override
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        Optional<Person> person = peopleRepository.findByUserName(s);
+        Optional<Person> person = peopleRepository.findByUsername(s);
 
         if (person.isEmpty()) {
             throw new UsernameNotFoundException("User not found!");

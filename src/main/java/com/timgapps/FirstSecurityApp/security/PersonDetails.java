@@ -28,7 +28,6 @@ public class PersonDetails implements UserDetails {
         return this.person.getPassword();
     }
 
-
     @Override
     public String getUsername() {
         return this.person.getUsername();
@@ -43,7 +42,7 @@ public class PersonDetails implements UserDetails {
     // показываем, что этот аккаунт не заблокирован, поэтому возвращаем true
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     // показываем, что пароль не просрочен, возвращаем true
@@ -56,5 +55,10 @@ public class PersonDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    // нужен, чтобы получать данные аутентифицированного пользователя
+    public Person getPerson() {
+        return this.person;
     }
 }

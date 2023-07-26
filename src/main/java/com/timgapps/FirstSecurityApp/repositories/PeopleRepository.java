@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface PeopleRepository extends JpaRepository<Person, Integer> {
 
     // Optional<> говорит о том, что человек может быть найден, а может быть не найден
-    Optional<Person> findByUserName(String username);
+    Optional<Person> findByUsername(String username);
 }
