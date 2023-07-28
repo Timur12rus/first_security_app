@@ -47,7 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .authorizeRequests()
                 // если вызываем этот метод, то все запросы которые приходят к нам в приложение
                 // будут проходить через нашу авторизацию, которую мы здесь настроим
-                .antMatchers("/auth/login", "/error").permitAll() // используем antMatcher'ы чтобы смотреть какой запрос пришел
+                .antMatchers("/auth/login", "/error", "/auth/registration").permitAll() // используем antMatcher'ы чтобы смотреть какой запрос пришел
                 // к нам в приложение, и если пришел такой запрос, мы должны его пускать на страницу с адресом
                 // "/auth/login" и пускаем любого пользователя на страницу "/error", они должны быть доступны всем,
                 // их доступность мы указываем с помощью antMatcher'а

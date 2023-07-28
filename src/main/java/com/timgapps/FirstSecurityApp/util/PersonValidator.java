@@ -27,9 +27,13 @@ public class PersonValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         Person person = (Person) target;
+        // используя personDetailService произведем валидацию
         try {
             personDetailsService.loadUserByUsername(person.getUsername());
         } catch (UsernameNotFoundException ignored) {
+            // немного не правильный подход, но мы так сделаем:
+            // в случае, если loadUserByUsername выбросит исключение, значит валидация прошла успешно,
+            // значит такой человек не найден
             return;   // Всё ок, пользователь с таким именем не найден
         }
         errors.rejectValue("username", "", "Человек с таким именем пользователя уже существует");
