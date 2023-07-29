@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -28,7 +29,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // настраиваем аутентификацию в этом методе
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(personDetailsService);
+        auth.userDetailsService(personDetailsService)
+                .passwordEncoder(getPasswordEncoder());  // чтобы использовать алгоритм BCrypt просто добавим это сюда
+        //  теперь springSecurity автоматически будет прогонять пароль из формы через этот BCryptPasswordEncoder при аутентификации
+        // и два зашифрованных пароля будут сравниваться и spring будет либо пускать либо не пускать пользователя
     }
 
     @Override
@@ -41,10 +45,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // -----------------конфигурируем авторизацию,---------------------
         http.csrf().disable()  // отключаем защиту от межсайтовой подделки запросов
 
-        // далее будем давать или не давать доступ пользователю к определенным
-        // всё что ниже назвается "правила авторизации", они читаются сверху вниз, сначала идут более специфичные,
-        // а далее более общие правила
-        .authorizeRequests()
+                // далее будем давать или не давать доступ пользователю к определенным
+                // всё что ниже назвается "правила авторизации", они читаются сверху вниз, сначала идут более специфичные,
+                // а далее более общие правила
+                .authorizeRequests()
                 // если вызываем этот метод, то все запросы которые приходят к нам в приложение
                 // будут проходить через нашу авторизацию, которую мы здесь настроим
                 .antMatchers("/auth/login", "/error", "/auth/registration").permitAll() // используем antMatcher'ы чтобы смотреть какой запрос пришел
@@ -72,6 +76,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+        return new BCryptPasswordEncoder();
     }
 }
