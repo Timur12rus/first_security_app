@@ -6,7 +6,10 @@
 </head>
 <body>
 Hello world!
-<br/>
+
+<form th:action="@{/logout}" th:method="POST"   >
+    <input type="submit" value="Logout">
+</form>
 <a href="/logout">Logout</a>
 </body>
 </html>
