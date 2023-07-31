@@ -25,4 +25,13 @@ public class HelloController {
 
         return "hello";
     }
+
+    // чтобы разграничить доступ к частям нашего приложения
+    // для этого мы должны создать страницу, на которую может попасть только администратор
+
+    @GetMapping("/admin")
+    public String adminPage() {
+        return "admin";
+    }
+
 }

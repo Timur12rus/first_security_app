@@ -19,6 +19,9 @@ public class RegistrtionService {
     // в э
     @Transactional  // аннотация, потому что происходит изменение в базе данных
     public void register(Person person) {
+        person.setRole("ROLE_USER");  // имя роли всегда долно начинаться со слова "ROLE_",
+        //  только тогда spring будет понимать, что это роль
         peopleRepository.save(person);
+
     }
 }
