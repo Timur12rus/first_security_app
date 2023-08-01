@@ -3,14 +3,23 @@ package com.timgapps.FirstSecurityApp.config;
 import com.timgapps.FirstSecurityApp.services.PersonDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 // Этот класс является главным классом, где мы настраиваем SpringSecurity
 @EnableWebSecurity
+// включим возможность авотризации на уровне методов
+// для этого используем аннотацию
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+// нужно где-то в коде повесить аннотацию @PreAuthorize, теперь мы можем её использовать
+// и теперь SringSecurity будет проверять, что у пользователя есть какая-то роль, которую мы укажем, прежде чем выполянть метод, который мы укажем
+// эту аннотацию не используют в контроллерах
+// например эту аннотацию вешают в сервисах, чтобы блокировать доступ на уровне сервисов
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
@@ -28,7 +37,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     // настраиваем аутентификацию в этом методе
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(personDetailsService);
+        auth.userDetailsService(personDetailsService)
+                // тот пароль, который человек ввел в форму при аутентификации, нужно прогнать через BCrypt
+                // чтобы сравнивать два зашифрованных пароля
+                // чтобы использовать алгоритм BCrypt при аутентификации
+                // вызываем метод .passwordEncoder()
+                .passwordEncoder(getPasswordEncoder());
+        // теперь Spring Security автоматически при аутентификации будет прогонять через алгоритм шифрования паролей
+        // BCrypt прогонять пароль из формы, соответсвенно два этих пароля будут сравниваться и Spring будет либо
+        // пускать человека либо не пускать
     }
 
     @Override
@@ -49,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 // если вызываем этот метод, то все запросы которые приходят к нам в приложение
                 // будут проходить через нашу авторизацию, которую мы здесь настроим
                 // для админа настраиваем доступ к адресу
-                .antMatchers("/admin").hasRole("ADMIN") // здесь не указываем слово "ROLE_"
+//                .antMatchers("/admin").hasRole("ADMIN") // здесь не указываем слово "ROLE_"
                 // spring security понимает автоматически, что у нас роль "ROLE_ADMIN"
                 ////****************************************
                 .antMatchers("/auth/login", "/error", "/auth/registration").permitAll() // используем antMatcher'ы чтобы смотреть какой запрос пришел
@@ -93,6 +110,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
-        return NoOpPasswordEncoder.getInstance();
+//        return NoOpPasswordEncoder.getInstance();  // нет никакого шифрования
+        return new BCryptPasswordEncoder();  // возвращаем новый объект энкодера, который будет заниматься шифрованием
     }
 }
